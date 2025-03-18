@@ -45,6 +45,13 @@ public class Deadline  {
     }
     
     public static void sendDeadlineEvents(){
+
+        //1. 모든 데드라인 레코드를 가져온다. 
+        //2. 현재시간을 구한다. 
+        //3. 현재시간과 데드라인 필드를 비교하여 시간이 지난 레코드가 있다면...
+        //4. 그 레코드를 이용해서 DeadlineReached 이벤트를 만든다!
+        //5. 그 레코드를 삭제한다. 
+        
         repository().findAll().forEach(deadline ->{
             Date now = new Date();
             
