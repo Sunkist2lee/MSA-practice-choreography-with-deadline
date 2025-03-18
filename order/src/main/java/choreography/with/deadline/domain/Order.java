@@ -14,73 +14,28 @@ import java.util.Date;
 @Data
 
 public class Order  {
-
     
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    
-    
-    
-    
-    
     private Long id;
-    
-    
-    
-    
-    
+        
     private String customerId;
-    
-    
-    
-    
-    
     private String customerName;
-    
-    
-    
-    
-    
     private String productId;
-    
-    
-    
-    
-    
     private String productName;
-    
-    
-    
-    
-    
     private Integer qty;
-    
-    
-    
-    
-    
     private String address;
+    private String status;
 
+    @PrePersist
+    public void setStatus(){
+        setStatus("PENDING"); //FOCUS
+    }
+    
     @PostPersist
-    public void onPostPersist(){
-
-
+    public void onPostPersist() {
         OrderCreated orderCreated = new OrderCreated(this);
         orderCreated.publishAfterCommit();
-
-
-
-        OrderPlaced orderPlaced = new OrderPlaced(this);
-        orderPlaced.publishAfterCommit();
-
-    }
-    @PostRemove
-    public void onPostRemove(){
-
-
-        OrderRejected orderRejected = new OrderRejected(this);
-        orderRejected.publishAfterCommit();
-
     }
 
     public static OrderRepository repository(){
@@ -88,108 +43,48 @@ public class Order  {
         return orderRepository;
     }
 
-
-
-
     public static void approve(StockDecreased stockDecreased){
-
-        /** Example 1:  new item 
-        Order order = new Order();
-        repository().save(order);
-
-        OrderPlaced orderPlaced = new OrderPlaced(order);
-        orderPlaced.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(stockDecreased.get???()).ifPresent(order->{
+        repository().findById(Long.valueOf(stockDecreased.getOrderId())).ifPresent(order->{
             
-            order // do something
+            order.setStatus("APPROVED");
             repository().save(order);
 
             OrderPlaced orderPlaced = new OrderPlaced(order);
             orderPlaced.publishAfterCommit();
-
          });
-        */
-
-        
     }
-    public static void reject(StockDecreaseFailed stockDecreaseFailed){
 
-        /** Example 1:  new item 
-        Order order = new Order();
-        repository().save(order);
-
-        OrderRejected orderRejected = new OrderRejected(order);
-        orderRejected.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(stockDecreaseFailed.get???()).ifPresent(order->{
-            
-            order // do something
-            repository().save(order);
-
-            OrderRejected orderRejected = new OrderRejected(order);
-            orderRejected.publishAfterCommit();
-
-         });
-        */
-
-        
-    }
     public static void reject(DeliveryFailed deliveryFailed){
-
-        /** Example 1:  new item 
-        Order order = new Order();
-        repository().save(order);
-
-        OrderRejected orderRejected = new OrderRejected(order);
-        orderRejected.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(deliveryFailed.get???()).ifPresent(order->{
+        repository().findById(Long.valueOf(deliveryFailed.getOrderId())).ifPresent(order->{
             
-            order // do something
+            order.setStatus("REJECTED DUE TO DELIVERY ERROR");
             repository().save(order);
 
             OrderRejected orderRejected = new OrderRejected(order);
             orderRejected.publishAfterCommit();
-
          });
-        */
-
-        
     }
-    public static void reject(DeadlineReached deadlineReached){
 
-        /** Example 1:  new item 
-        Order order = new Order();
-        repository().save(order);
-
-        OrderRejected orderRejected = new OrderRejected(order);
-        orderRejected.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(deadlineReached.get???()).ifPresent(order->{
+    public static void reject(StockDecreaseFailed stockDecreaseFailed){
+        repository().findById(Long.valueOf(stockDecreaseFailed.getOrderId())).ifPresent(order->{
             
-            order // do something
+            order.setStatus("REJECTED DUE TO INVENTORY ERROR");
             repository().save(order);
 
             OrderRejected orderRejected = new OrderRejected(order);
             orderRejected.publishAfterCommit();
-
          });
-        */
+    }
 
-        
+    public static void reject(DeadlineReached deadlineReached) {
+        repository().findById(Long.valueOf(deadlineReached.getOrderId())).ifPresent(order->{
+            
+            order.setStatus("REJECTED DUE TO DEADLINE");
+            repository().save(order);
+
+            OrderRejected orderRejected = new OrderRejected(order);
+            orderRejected.publishAfterCommit();
+         });
     }
 
 

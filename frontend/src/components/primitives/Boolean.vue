@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="editMode" style="margin-top:-20px;">
+        <div v-if="editMode">
             <v-radio-group 
                     v-model="value" 
                     row

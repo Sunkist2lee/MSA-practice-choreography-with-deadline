@@ -1,7 +1,13 @@
 <template>
     <div>
-        <div v-if="editMode" style="margin-top:-20px;">
-            <v-text-field type="number" :label="label" v-model="value" @change="change"/>
+        <div v-if="editMode">
+            <v-text-field v-model="value"
+                :label="label" 
+                @change="change"
+                type="number"
+                outlined
+                dense
+            />
         </div>
         <div v-else>
             {{label}} :  {{value}}

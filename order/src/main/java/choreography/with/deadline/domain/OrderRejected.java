@@ -15,7 +15,8 @@ public class OrderRejected extends AbstractEvent {
     private String productId;
     private String productName;
     private Integer qty;
-
+    private String status;
+    
     public OrderRejected(Order aggregate){
         super(aggregate);
     }

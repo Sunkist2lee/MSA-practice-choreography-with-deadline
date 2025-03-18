@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: deadline
-          image: username/deadline:latest
+          image: "username/deadline:latest"
           ports:
             - containerPort: 8080
           readinessProbe:

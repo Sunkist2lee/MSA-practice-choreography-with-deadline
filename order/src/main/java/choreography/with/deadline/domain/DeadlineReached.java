@@ -11,7 +11,7 @@ public class DeadlineReached extends AbstractEvent {
     private Long id;
     private Date deadline;
     private Long orderId;
-    private Date statedTime;
+    private Date startedTime;
 }
 
 

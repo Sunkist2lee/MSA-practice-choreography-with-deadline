@@ -18,118 +18,62 @@ public class Inventory  {
     
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    
-    
-    
-    
-    
     private Long id;
-    
-    
-    
-    
-    
     private String productName;
-    
-    
-    
-    
-    
     private String productImage;
-    
-    
-    
-    
-    
     private Integer stock;
 
-    @PostPersist
-    public void onPostPersist(){
-
-
-        StockDecreaseFailed stockDecreaseFailed = new StockDecreaseFailed(this);
-        stockDecreaseFailed.publishAfterCommit();
-
-    }
-    @PostUpdate
-    public void onPostUpdate(){
-
-
-        StockDecreased stockDecreased = new StockDecreased(this);
-        stockDecreased.publishAfterCommit();
-
-    }
-    @PreUpdate
-    public void onPreUpdate(){
-
-
-        StockIncreased stockIncreased = new StockIncreased(this);
-        stockIncreased.publishAfterCommit();
-
-    }
-
-    public static InventoryRepository repository(){
+     public static InventoryRepository repository(){
         InventoryRepository inventoryRepository = ProductApplication.applicationContext.getBean(InventoryRepository.class);
         return inventoryRepository;
     }
 
-
-
-
     public static void stockDecrease(DeliveryStarted deliveryStarted){
 
-        /** Example 1:  new item 
-        Inventory inventory = new Inventory();
-        repository().save(inventory);
+        //FOCUS: 멱등성 관리. 한번 처리된 적이 있다면 스킵. handle idempotent: once processed, skip the process:
+        if(Transaction.repository().findById(Long.valueOf(deliveryStarted.getOrderId())).isPresent())
+         return;
 
-        StockDecreased stockDecreased = new StockDecreased(inventory);
-        stockDecreased.publishAfterCommit();
-        StockDecreaseFailed stockDecreaseFailed = new StockDecreaseFailed(inventory);
-        stockDecreaseFailed.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(deliveryStarted.get???()).ifPresent(inventory->{
+        repository().findById(Long.valueOf(deliveryStarted.getProductId())).ifPresent(inventory->{
             
-            inventory // do something
-            repository().save(inventory);
+            if(inventory.getStock() > deliveryStarted.getQty()) {
+                inventory.setStock(inventory.getStock() - deliveryStarted.getQty());
+                repository().save(inventory);
 
-            StockDecreased stockDecreased = new StockDecreased(inventory);
-            stockDecreased.publishAfterCommit();
-            StockDecreaseFailed stockDecreaseFailed = new StockDecreaseFailed(inventory);
-            stockDecreaseFailed.publishAfterCommit();
+                // 멱등성 처리를 위해 처리된 주문에 대해 Trx 범위 내에서 플래그 처리
+                Transaction transaction = new Transaction();
+                transaction.setOrderId(Long.valueOf(deliveryStarted.getOrderId()));
+                transaction.setStockOrdered(deliveryStarted.getQty());
+                transaction.setCustomerId(deliveryStarted.getCustomerId());
+                Transaction.repository().save(transaction);
+
+                StockDecreased stockDecreased = new StockDecreased(inventory);
+                stockDecreased.setOrderId(deliveryStarted.getOrderId());
+                stockDecreased.publishAfterCommit();
+            } else {
+                StockDecreaseFailed stockDecreaseFailed = new StockDecreaseFailed(inventory);
+                stockDecreaseFailed.setOrderId(deliveryStarted.getOrderId());
+                stockDecreaseFailed.publishAfterCommit();
+            }
 
          });
-        */
-
-        
     }
+    
     public static void compensate(DeliveryCancelled deliveryCancelled){
+        Transaction.repository().findById(Long.valueOf(deliveryCancelled.getOrderId())).ifPresentOrElse(tx ->{
+            repository().findById(Long.valueOf(deliveryCancelled.getProductId())).ifPresent(inventory->{
+                
+                inventory.setStock(inventory.getStock() + deliveryCancelled.getQty()); // do something
+                repository().save(inventory);
 
-        /** Example 1:  new item 
-        Inventory inventory = new Inventory();
-        repository().save(inventory);
+                Transaction.repository().delete(tx); //FOCUS: 멱등성 관리를 위해 두번 보상 처리되는 것을 막기 위해 트랜잭션 이력 삭제, (플래그로 처리해도 되긴 함).  handle idempotent. delete to prevent to process twice
+                new StockIncreased(inventory).publish();
 
-        StockIncreased stockIncreased = new StockIncreased(inventory);
-        stockIncreased.publishAfterCommit();
-        */
-
-        /** Example 2:  finding and process
-        
-        repository().findById(deliveryCancelled.get???()).ifPresent(inventory->{
-            
-            inventory // do something
-            repository().save(inventory);
-
-            StockIncreased stockIncreased = new StockIncreased(inventory);
-            stockIncreased.publishAfterCommit();
-
-         });
-        */
-
-        
+            });
+        }
+         ,()->{
+             throw new RuntimeException("Compensation failed due to stock");
+         }
+        );
     }
-
-
 }

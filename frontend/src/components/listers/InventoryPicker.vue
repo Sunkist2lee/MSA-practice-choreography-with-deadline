@@ -3,12 +3,12 @@
         <v-list two-line v-if="list.length > 0">
             <v-list-item-group 
                     v-model="selected" 
-                    color="indigo"
+                    color="primary"
                     @change="select"
             >
                 <v-list-item v-for="(item, idx) in list" :key="idx">
                     <template v-slot:default="{ active }">
-                        <v-list-item-avatar color="grey darken-1">
+                        <v-list-item-avatar color="primary-darker-1">
                         </v-list-item-avatar>
                         
                         <v-list-item-content>
@@ -26,7 +26,7 @@
                         </v-list-item-content>
 
                         <v-list-item-action>
-                            <v-checkbox :input-value="active" color="indigo"></v-checkbox>
+                            <v-checkbox :input-value="active" color="primary-darker-1"></v-checkbox>
                         </v-list-item-action>
                     </template>
                 </v-list-item>
@@ -40,7 +40,7 @@
     const axios = require('axios').default;
 
     export default {
-        name: 'InventoryPicker',
+        name: 'ProductInventoryPicker',
         props: {
             value: [String, Object, Array, Number, Boolean],
         },

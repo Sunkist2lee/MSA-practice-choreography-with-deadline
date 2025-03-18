@@ -1,5 +1,6 @@
 server:
   port: 8080
+
 spring:
   application:
     name: product
@@ -12,6 +13,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
   cloud:
     stream:
       kafka:
@@ -28,10 +30,14 @@ spring:
       bindings:
         event-in:
           group: product
-          destination: choreography.with.deadline
+#<<< EDA / Topic Name
+          destination: choreographywithdeadline
+#>>> EDA / Topic Name
           contentType: application/json
         event-out:
-          destination: choreography.with.deadline
+#<<< EDA / Topic Name
+          destination: choreographywithdeadline
+#>>> EDA / Topic Name
           contentType: application/json
 
 logging:
@@ -41,12 +47,18 @@ logging:
 
 
 server:
-  port: 8083
+  port: 8084
 
 ---
 
 spring:
   profiles: docker
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
   cloud:
     stream:
       kafka:
@@ -63,10 +75,10 @@ spring:
       bindings:
         event-in:
           group: product
-          destination: choreography.with.deadline
+          destination: choreographywithdeadline
           contentType: application/json
         event-out:
-          destination: choreography.with.deadline
+          destination: choreographywithdeadline
           contentType: application/json
 
 

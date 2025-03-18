@@ -1,5 +1,5 @@
 <template>
-    <div style="margin: 0 -15px 0 -15px;">
+    <div>
         <v-card-title  v-if="editMode">
             {{label}}
         </v-card-title>
@@ -12,7 +12,7 @@
                 <v-btn
                 v-if="avatarMode"
                 icon
-                color="grey"
+                color="primary"
                 @click="changeUserCard()"
                 >
                     <v-icon>mdi-credit-card</v-icon>
@@ -20,7 +20,7 @@
                 <v-btn
                 v-if="!avatarMode"
                 icon
-                color="grey"
+                color="primary"
                 @click="changeUserCard()"
                 >
                     <v-icon>mdi-account-box</v-icon>
@@ -29,23 +29,23 @@
         </v-card-title>
 
         <v-card-text v-if="value">
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Id" v-model="value.userId"/>
+            <div v-if="editMode">
+                <v-text-field label="아이디" v-model="value.userId"/>
             </div>
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Password" v-model="value.password"/>
+            <div v-if="editMode">
+                <v-text-field label="비밀번호" v-model="value.password"/>
             </div>
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Name" v-model="value.name"/>
+            <div v-if="editMode">
+                <v-text-field label="이름" v-model="value.name"/>
             </div>
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Email" v-model="value.email"/>
+            <div v-if="editMode">
+                <v-text-field label="이메일" v-model="value.email"/>
             </div>
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Address" v-model="value.address"/>
+            <div v-if="editMode">
+                <v-text-field label="주소" v-model="value.address"/>
             </div>
-            <div v-if="editMode" style="margin-top:-20px;">
-                <v-text-field label="Phone" v-model="value.phone"/>
+            <div v-if="editMode">
+                <v-text-field label="휴대폰" v-model="value.phone"/>
             </div>
             <div v-if="!editMode">
                 <v-card

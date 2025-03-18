@@ -53,7 +53,7 @@
         },
         data: () => ({
             menu: false,
-            date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+            date: new Date().toISOString().substr(0, 10),
         }),
         created() {
             if(!this.value) {
@@ -61,7 +61,9 @@
             }
         },
         watch: {
-            value() {
+            date() {
+                const fullDate = new Date(this.date + 'T00:00:00.000Z').toISOString();
+                this.value = fullDate
                 this.change();
             }
         },

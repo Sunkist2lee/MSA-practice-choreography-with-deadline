@@ -29,14 +29,8 @@ public class PolicyHandler{
         DeliveryStarted event = deliveryStarted;
         System.out.println("\n\n##### listener StockDecrease : " + deliveryStarted + "\n\n");
 
-
-        
-
         // Sample Logic //
         Inventory.stockDecrease(event);
-        
-
-        
 
     }
 
@@ -46,17 +40,10 @@ public class PolicyHandler{
         DeliveryCancelled event = deliveryCancelled;
         System.out.println("\n\n##### listener Compensate : " + deliveryCancelled + "\n\n");
 
-
-        
-
         // Sample Logic //
         Inventory.compensate(event);
         
-
-        
-
     }
 
 }
-
 

@@ -1,5 +1,4 @@
 <template>
-
     <v-card outlined>
         <v-card-title>
             Order
@@ -11,7 +10,7 @@
         <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-                    color="deep-purple lighten-2"
+                    color="primary"
                     text
                     @click="order"
             >
@@ -19,7 +18,7 @@
             </v-btn>
             
             <v-btn
-                    color="deep-purple lighten-2"
+                    color="primary"
                     text
                     @click="close"
             >

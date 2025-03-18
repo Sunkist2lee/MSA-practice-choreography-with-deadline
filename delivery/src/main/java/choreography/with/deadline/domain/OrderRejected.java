@@ -14,6 +14,7 @@ public class OrderRejected extends AbstractEvent {
     private String productId;
     private String productName;
     private Integer qty;
+    private String status;    
 }
 
 

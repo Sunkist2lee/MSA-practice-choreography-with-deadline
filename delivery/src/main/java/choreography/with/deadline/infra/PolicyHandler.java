@@ -29,18 +29,8 @@ public class PolicyHandler{
         OrderCreated event = orderCreated;
         System.out.println("\n\n##### listener StartDelivery : " + orderCreated + "\n\n");
 
-
-        // Comments // 
-		//1. 물류업체 전문교환
-		// 2. 고객에게 알림 발송
-		// 3. 배송 장부에도 Data 저장
-
         // Sample Logic //
         Delivery.startDelivery(event);
-        
-
-        
-
     }
 
     @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='OrderRejected'")
@@ -49,17 +39,9 @@ public class PolicyHandler{
         OrderRejected event = orderRejected;
         System.out.println("\n\n##### listener Compensate : " + orderRejected + "\n\n");
 
-
-        
-
         // Sample Logic //
         Delivery.compensate(event);
-        
-
-        
-
     }
 
 }
-
 

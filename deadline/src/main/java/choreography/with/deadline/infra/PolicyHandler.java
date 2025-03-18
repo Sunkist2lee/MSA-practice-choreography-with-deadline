@@ -1,19 +1,15 @@
 package choreography.with.deadline.infra;
 
-import javax.naming.NameParser;
-
-import javax.naming.NameParser;
-import javax.transaction.Transactional;
-
+// import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import choreography.with.deadline.config.kafka.KafkaProcessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-import choreography.with.deadline.domain.*;
 
+
+import choreography.with.deadline.domain.*;
 
 @Service
 @Transactional
@@ -27,34 +23,23 @@ public class PolicyHandler{
     public void wheneverOrderCreated_Schedule(@Payload OrderCreated orderCreated){
 
         OrderCreated event = orderCreated;
-        System.out.println("\n\n##### listener Schedule : " + orderCreated + "\n\n");
-
-
-        
 
         // Sample Logic //
         Deadline.schedule(event);
-        
-
-        
-
     }
 
     @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='OrderPlaced'")
-    public void wheneverOrderPlaced_RemoveDeadline(@Payload OrderPlaced orderPlaced){
+    public void wheneverOrderPlaced_delete(@Payload OrderPlaced orderPlaced){
 
         OrderPlaced event = orderPlaced;
-        System.out.println("\n\n##### listener RemoveDeadline : " + orderPlaced + "\n\n");
-
-
-        
 
         // Sample Logic //
-        Deadline.removeDeadline(event);
-        
+        Deadline.delete(event);       
+    }
 
-        
-
+    // @Scheduled(fixedRate = 5000) 간혹, Unexpected error occurred in scheduled task 오류 발생.. @Scheduled @Transactional 분리권고에 따라 DeadlineScheduler 추가 
+    public void checkDeadline(){
+        Deadline.sendDeadlineEvents();
     }
 
 }
